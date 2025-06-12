@@ -1,0 +1,39 @@
+import os
+import nltk
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
+nltk.download('punkt')
+
+# Step 1: Job Description
+job_description = """
+We are looking for a Data Scientist with experience in Python, machine learning,
+data visualization, and knowledge of tools like Pandas, NumPy, and Scikit-learn.
+"""
+
+# Step 2: Sample Resumes (You can load from files too)
+resumes = [
+    "Experienced data scientist skilled in Python, NumPy, and ML algorithms.",
+    "Web developer with knowledge in HTML, CSS, JavaScript and React.",
+    "Machine learning enthusiast familiar with Pandas, Scikit-learn, and data analysis.",
+    "Python developer with focus on automation and scripting.",
+]
+
+candidate_names = ["Alice", "Bob", "Charlie", "Diana"]
+
+# Step 3: Vectorize all documents (job + resumes)
+documents = [job_description] + resumes
+vectorizer = TfidfVectorizer()
+vectors = vectorizer.fit_transform(documents)
+
+# Step 4: Compute Similarity
+job_vector = vectors[0]
+resume_vectors = vectors[1:]
+
+scores = cosine_similarity(job_vector, resume_vectors)[0]
+ranked_candidates = sorted(zip(candidate_names, scores), key=lambda x: x[1], reverse=True)
+
+# Step 5: Output Ranked Resumes
+print("📄 Resume Ranking Based on Job Description:\n")
+for i, (name, score) in enumerate(ranked_candidates):
+    print(f"{i+1}. {name} - Score: {score:.2f}")
